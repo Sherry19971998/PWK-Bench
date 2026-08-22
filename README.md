@@ -113,10 +113,10 @@ emit structured outputs that map to those claims:
 - Closed-book and masking controls:
   `figures/live/consequence_mask.png`, related masked trajectory outputs
 
-## Reproducing the paper's real numbers
+## Reproducing the paper's main real-cohort results
 
-Three run targets, one per block — each links to the block's own README for
-the full command set, output files, and caveats:
+This section is only for the paper's main real-cohort claims (491-variant
+ClinVar cohort): frozen evidence pool + live agent loop.
 
 - **Frozen evidence pool** — budget-AUC curves, order alignment, RQ3/RQ4
   robustness analyses. `gpt-5.5` (headline) + `gemini-2.5-pro` (second
@@ -140,6 +140,13 @@ the full command set, output files, and caveats:
   where `claude-sonnet-5` appears, but **only** for the RQ3 closed-book
   masking check, not this main loop.
 
+To build the real 491-variant cohort from scratch instead of using the
+bundled one, see [`docs/variant/real_data.md`](docs/variant/real_data.md)
+(exact public sources: ClinVar ≥2-star, gnomAD v4, gnomAD constraint,
+AlphaMissense).
+
+## Supplementary and transfer checks (not the main real-cohort headline)
+
 - **SPHERE (second domain)** — synthetic multi-modal transfer check:
   ```bash
   python3 scripts/sphere/run_sphere.py --data data/sphere --task ad_vs_hc \
@@ -151,8 +158,3 @@ the full command set, output files, and caveats:
   results (Oracle exactness, sufficiency selection bias, the
   `DiscriminativeGreedy` baseline, calibration, a reference stopping rule).
   See [`scripts/analysis/README.md`](scripts/analysis/README.md).
-
-To build the real 491-variant cohort from scratch instead of using the
-bundled one, see [`docs/variant/real_data.md`](docs/variant/real_data.md)
-(exact public sources: ClinVar ≥2-star, gnomAD v4, gnomAD constraint,
-AlphaMissense).
