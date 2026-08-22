@@ -22,8 +22,8 @@ This mirrors the execution structure and keeps method details close to the
 scripts that implement them.
 
 For scope clarity: the current submitted PDF's main reproduction path is
-variant + live only. SPHERE is kept in this repo as an optional extra domain
-experiment, not part of the submitted-paper headline claims.
+variant + live only. SPHERE is kept in this repo as a future-work/extension
+track, not part of the submitted-paper headline claims.
 
 ## Repository Layout
 
@@ -33,7 +33,7 @@ experiment, not part of the submitted-paper headline claims.
 ├── scripts/
 │   ├── variant/            frozen evidence pool -- run + reproduce (README here)
 │   ├── live/               live tool-using agent + RQ3 masking check (README here)
-│   ├── sphere/             optional extra-domain sandbox (not in submitted-paper core path)
+│   ├── sphere/             future-work extension track (not in submitted-paper core path)
 │   └── analysis/           supplementary robustness checks (README here)
 ├── configs/models.yaml     model matrix (demo / real_all_api / ...)
 ├── data/                   bundled cohorts -- real vs. synthetic (README here)
@@ -56,7 +56,7 @@ breakdown (including the RQ3 masking-check cohorts). In short:
 |---|---|---|
 | `data/sample/cohort_variant_synthetic.parquet` | Fully synthetic toy cohort | `--demo` only — a pipeline check, never the paper's numbers |
 | `data/sample/cohort_full_real.parquet` | Fully real, already-annotated 491-variant cohort — no fetch step needed | Real runs — this is what the paper's headline numbers come from |
-| `data/sphere/` | Stanford ADRC's own SPHERE release (officially synthetic) | Optional extra-domain sandbox only; not required for submitted-paper reproduction |
+| `data/sphere/` | Stanford ADRC's own SPHERE release (officially synthetic) | Future-work extension track only; not required for submitted-paper reproduction |
 
 ## Install
 
@@ -154,9 +154,9 @@ bundled one, see [`docs/variant/real_data.md`](docs/variant/real_data.md)
 (exact public sources: ClinVar ≥2-star, gnomAD v4, gnomAD constraint,
 AlphaMissense).
 
-## Optional extras not required for submitted-paper reproduction
+## Future-work extension track (not required for submitted-paper reproduction)
 
-SPHERE is provided as an optional extra-domain sandbox. It is not in the
+SPHERE is provided as a future-work extension track. It is not in the
 submitted-paper core reproduction path.
 
 - **SPHERE (second domain)** — synthetic multi-modal transfer check:
