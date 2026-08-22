@@ -54,36 +54,13 @@ python scripts/live/run_live.py --vendor gemini --tag gemini
 Outputs are written to `results/variant/*`, `results/live/*`,
 `figures/variant/*`, and `figures/live/*`.
 
-## Paper Metrics Map (RQ1-RQ4)
-
-| RQ | Focus | Primary metrics |
-|---|---|---|
-| **RQ1** | Marginal value of added evidence; stopping vs retrospective sufficiency | `A(k)` (per-gene macro AUC), `max_k A(k)-A(K)`, clinical yield/resolution, exceedance rate, over-acquisition |
-| **RQ2** | Efficiency and ordering quality | `AE`, `DeltaOracle`, `PO_rel`, `PO_dec`, `rho_rel`, `rho_dec` |
-| **RQ3** | Acquisition signal vs closed-book signal | `G_acq = AUC_acq - AUC_HGVS`, masking controls |
-| **RQ4** | Reliability and sensitivity | run variance, provenance/context/cost/domain sensitivity, calibration checks |
-
-Reference bounds are the fixed global relevance order (RelMax, lower reference)
-and the exactly enumerable cohort-level measurement ceiling (upper reference).
-
-## Where To Find Details
+## More Details
 
 - Variant details and full output list: [scripts/variant/README.md](scripts/variant/README.md)
 - Live details and run caveats: [scripts/live/README.md](scripts/live/README.md)
 - Supplementary analysis helpers: [scripts/analysis/README.md](scripts/analysis/README.md)
 - Data breakdown: [data/README.md](data/README.md)
+- SPHERE future-work extension track: [scripts/sphere/README.md](scripts/sphere/README.md)
 
 To rebuild the real 491-variant cohort from public sources instead of using the
 bundled file, see [docs/variant/real_data.md](docs/variant/real_data.md).
-
-## Future-Work Extension Track
-
-SPHERE is included as a future-work extension track and is **not required** for
-submitted-paper core reproduction.
-
-```bash
-python3 scripts/sphere/run_sphere.py --data data/sphere --task ad_vs_hc \
-  --outdir results/sphere --figdir figures/sphere
-```
-
-SPHERE details: [scripts/sphere/README.md](scripts/sphere/README.md)
