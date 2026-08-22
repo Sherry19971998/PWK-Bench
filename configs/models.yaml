@@ -1,0 +1,213 @@
+# Plan A model matrix. Two axes: vendor/openness x capability scale.
+# `capability_proxy` is a 0-1 stand-in ONLY used to order models on the scaling
+# plot; replace with a real capability measure (e.g. MMLU) for the paper.
+# Model IDs are placeholders — set them to the exact versions you run and they
+# are recorded verbatim in results. The offline demo uses only the `mock` rows.
+
+demo:                       # runs with NO api key
+  - {slot: frontier_A, kind: mock, model_id: mock-primary,   capability_proxy: 0.90, adherence: 0.85}
+  - {slot: frontier_B, kind: mock, model_id: mock-2ndvendor, capability_proxy: 0.80, adherence: 0.80}
+  - {slot: open_large, kind: mock, model_id: mock-open-70b,  capability_proxy: 0.55, adherence: 0.70}
+  - {slot: open_small, kind: mock, model_id: mock-open-8b,   capability_proxy: 0.25, adherence: 0.55}
+
+real:                       # fill in exact versions; needs api keys / local weights
+  # `workers: N` fans out the per-variant API calls across N threads (independent
+  # calls, results written back by index -> identical to serial, just faster).
+  # Start at 4-8 for API models to overlap network latency; keep hf at 1 (a
+  # local GPU pipeline is already batched and not thread-safe to share).
+  # Run of 2026-07-27. Anthropic/hf rows removed: no key / no local weights.
+  #
+  # GEMINI: verified live (2026-07-27) that gemini-3.5-flash answers correctly
+  # over the real API -- the model/prompt path works. What's still blocking a
+  # full pass is the Google AI Studio project's FREE-TIER DAILY cap (quotaId
+  # GenerateRequestsPerDayPerProjectPerModel-FreeTier, quotaValue 20/day), not a
+  # code or access problem. A full cohort pass needs ~90 distinct prompts (491
+  # variants x 4 steps, collapsed by the prompt cache), so one calendar day of
+  # free-tier quota cannot cover it in a single run.
+  # `cache_path` makes this resumable: scripts/variant/warm_llm_cache.py can be invoked
+  # once a day (see its --help), each time adding whatever the day's 20-request
+  # cap allows to the on-disk cache, until either billing is enabled on the
+  # Google AI project (removes the daily cap; delete cache_path or just rerun,
+  # it will finish in one pass) or the cache fills over several days. Once the
+  # cache holds all ~90 distinct prompts, this row's normal harness run (via
+  # run_benchmark.py --models real) is a 100% cache hit -- no further API calls.
+  - {slot: frontier_C, kind: gemini, model_id: "gemini-3.5-flash", capability_proxy: 0.85, workers: 1, cache_path: "results/variant/real/.cache/frontier_C.json"}
+  #
+  # Added 2026-07-28: gemini-3.5-flash-lite, as an EXTRA row rather than a
+  # replacement for frontier_C. It shares the same Google AI Studio free-tier
+  # project/key as frontier_C but is on a much less contended quota bucket --
+  # verified >260 real calls same-day with zero 429s, vs. frontier_C's hard
+  # 20/day cap -- so it's the practical way to get a Gemini row through the
+  # full sweep without waiting on billing. Deliberately NOT reusing the
+  # frontier_C slot/capability_proxy: it is a smaller, cheaper "lite" tier
+  # model, materially weaker than the frontier_B/C/D trio (0.82-0.88), so
+  # mislabeling it at frontier capability would distort the capability-vs-
+  # metric scaling plot this matrix feeds. capability_proxy=0.65 here is a
+  # rough placeholder (between open_large's 0.55 and the frontier tier) --
+  # replace with a real capability measure if one is available, same caveat
+  # as every other capability_proxy in this file.
+  - {slot: budget_C, kind: gemini, model_id: "gemini-3.5-flash-lite", capability_proxy: 0.65, workers: 1, cache_path: "results/variant/real/.cache/budget_C.json"}
+  #
+  # capability_proxy is still the template's PLACEHOLDER 0-1 stand-in -- it only
+  # orders the points on the scaling plot and is NOT a measured capability score.
+  - {slot: frontier_B, kind: openai, model_id: "gpt-5.5-2026-04-23", capability_proxy: 0.88, workers: 8}
+  - {slot: frontier_D, kind: openai, model_id: "gpt-5.4-2026-03-05", capability_proxy: 0.82, workers: 8}
+
+# Subset of `real:` usable RIGHT NOW without either (a) re-spending money on
+# OpenAI calls that already completed in results/variant/real/results.csv (2026-07-27),
+# or (b) tripping frontier_C's exhausted 20/day quota (harness.run has no
+# per-agent try/except, so one DailyQuotaExhausted from frontier_C would crash
+# the whole run before budget_C's row is ever computed). budget_C's cache is
+# already 100% warm, so this is a zero-API-call run purely to get its row.
+real_available:
+  - {slot: budget_C, kind: gemini, model_id: "gemini-3.5-flash-lite", capability_proxy: 0.65, workers: 1, cache_path: "results/variant/real/.cache/budget_C.json"}
+
+# Same exclusion of frontier_C (still quota-blocked) as real_available, but ALSO
+# re-runs frontier_B/frontier_D so the new per-agent clinical_yield.csv (see
+# run_benchmark.py) gets real rows for them -- their per-variant orders were
+# never persisted to disk (no cache_path on those rows), so this re-spends real
+# OpenAI API cost (~90 calls/model after cache-collapsing at context:false,
+# same order of magnitude as the 2026-07-27 run) to recompute what the earlier
+# run already showed for A(k)/rho, plus the clinical-endpoint numbers that run
+# never computed. budget_C is zero-cost (cache already 100% warm).
+real_trusted:
+  - {slot: budget_C, kind: gemini, model_id: "gemini-3.5-flash-lite", capability_proxy: 0.65, workers: 1, cache_path: "results/variant/real/.cache/budget_C.json"}
+  - {slot: frontier_B, kind: openai, model_id: "gpt-5.5-2026-04-23", capability_proxy: 0.88, workers: 8}
+  - {slot: frontier_D, kind: openai, model_id: "gpt-5.4-2026-03-05", capability_proxy: 0.82, workers: 8}
+
+# frontier_D ALONE, for repeated-run variance characterization:
+# gpt-5.4-2026-03-05 is a reasoning model
+# that OpenAI's API refuses to run at temperature=0 (OpenAIAgent's own
+# docstring already measured a 0.056 rho_vs_oracle swing between two prior
+# runs), so a single real sweep is not enough to trust a significance claim.
+# No cache_path (OpenAIAgent has none for non-Gemini rows), so every
+# invocation of this key is a genuinely fresh, independent real API sample --
+# intentional, do not add cache_path here.
+real_frontier_D_only:
+  - {slot: frontier_D, kind: openai, model_id: "gpt-5.4-2026-03-05", capability_proxy: 0.82, workers: 8}
+
+# frontier_B ALONE, for repeating the CLINICAL-YIELD significance result.
+# `run_variance.py` reports A(k)/PE/rho but NOT resolved_frac, so the k=3
+# diagnostic-yield contrast (gpt-5.5 vs RelMax, p=3.4e-05) can only be repeated
+# by re-running run_benchmark.py --robustness, which is what this key is for.
+#
+# It is nearly free despite being a full 491-variant sweep: under context:false
+# every step prompt collapses to ~27 distinct strings, so one pass costs about
+# 27 real API calls (measured, see results/variant/variance/.cache_*.json). No
+# cache_path -- each invocation must be an independent sample.
+real_frontier_B_only:
+  - {slot: frontier_B, kind: openai, model_id: "gpt-5.5-2026-04-23", capability_proxy: 0.88, workers: 8}
+
+# P1(b) context ablation: the SAME model_id run twice, once with no variant
+# context (k=1 prompts identical -> cannot plan instance-adaptively) and once
+# with gene/consequence/domain supplied. Report rho_vs_oracle for both:
+#   context on  >> off  => planning is limited by context supply, not capability
+#   context on  ~= off  => the paper's strong claim, now with a control
+ablation_demo:              # offline (mock stand-in): shows the mechanism, no key
+  - {slot: no_context,   kind: mock, model_id: mock-ablate, adherence: 0.85, context: false}
+  - {slot: with_context, kind: mock, model_id: mock-ablate, adherence: 0.85, context: true}
+
+ablation_real:             # real model: one model_id, two prompt conditions
+  # Run of 2026-07-27 on gpt-5.5-2026-04-23. NOTE the cost asymmetry: with
+  # context:false every variant's step-k prompt collapses to a handful of
+  # distinct strings (491x4 = 1964 elicitations -> ~90 real calls, 97% cache
+  # hits). With context:true the gene/consequence/domain line makes prompts
+  # variant-specific, so the cache absorbs only ~14% and the same sweep costs
+  # ~1690 calls. Budget the context arm ~20x the no-context arm.
+  - {slot: no_context,   kind: openai, model_id: "gpt-5.5-2026-04-23", context: false, workers: 8}
+  - {slot: with_context, kind: openai, model_id: "gpt-5.5-2026-04-23", context: true,  workers: 8}
+
+# CLAUDE VIA THE CLI, not the Messages API. Fills the vendor axis (the paper's
+# frozen rows are OpenAI + Google only) WITHOUT an ANTHROPIC_API_KEY: it drives
+# the Claude Code binary, so it bills the user's Claude subscription.
+#
+# READ pwkbench/agents/llm.py::ClaudeCLIAgent BEFORE CITING THIS ROW. Measured
+# 2026-08-01: even with every tool disabled and --system-prompt replacing the
+# default, the model receives ~12.5k tokens of Claude Code scaffolding ahead of
+# the benchmark prompt (~27.5k with tools on), where every other adapter sends
+# ~200 tokens and nothing else. The CLI also exposes no temperature and no seed.
+# So this is a "Claude Code" row, not a bare-model row; it is weaker evidence
+# than an API-key run and must be reported as such, not silently placed
+# alongside the gpt-5.5 / gemini rows.
+#
+# model_id is claude-sonnet-5 deliberately: that is the model docs/ main tex
+# names, so this is the one CLI configuration that also speaks to the main-tex
+# vs repro-package mismatch. _complete() verifies the model that actually
+# answered and RAISES on any fallback, so a downgrade cannot pass silently.
+#
+# No cache_path: each invocation must be an independent sample (same rationale
+# as real_frontier_B_only). Cost, measured: ~$0.17 for the first call (cold
+# prompt-cache write of the harness prefix) then ~$0.01/call while the cache is
+# warm; the frozen context:false sweep collapses to ~27 distinct prompts.
+# workers: 1 -- each call spawns a CLI process; concurrency multiplies the
+# harness prefix cost and has not been validated for auth contention.
+real_claude_cli:
+  - {slot: frontier_E, kind: claude_cli, model_id: "claude-sonnet-5", capability_proxy: 0.88, workers: 1}
+
+# CLAUDE VIA THE MESSAGES API (kind: anthropic), not the CLI -- the
+# from-scratch-reproducible equivalent of real_claude_cli above, IF you want
+# to run Claude through this FROZEN-POOL budget-AUC sweep. Needs
+# ANTHROPIC_API_KEY, no Claude Code CLI or subscription required.
+#
+# READ THIS BEFORE USING THIS BLOCK: the paper does NOT report a
+# claude-sonnet-5 row in the frozen-pool comparison. Table tab:agents lists
+# claude-sonnet-5 as "masking check only" -- its one role in the paper is the
+# RQ3 closed-book memorization/validity probe, and that is a LIVE-paradigm,
+# NO-TOOLS experiment (masked HGVS name, zero evidence acquisition), not
+# anything this frozen block runs. To reproduce that specific paper result,
+# use scripts/live/run_live.py --vendor anthropic --no-tools (see the
+# "Reproducing the RQ3 masking check" section in README.md), NOT this block.
+#
+# This block exists only if you want to EXTEND the comparison beyond what the
+# paper reports (run Claude through the same frozen budget-AUC sweep as
+# gpt-5.5/gemini-2.5-pro, for your own follow-up analysis) -- treat any
+# numbers it produces as new, not as a paper reproduction.
+real_claude_api:
+  - {slot: frontier_E, kind: anthropic, model_id: "claude-sonnet-5", capability_proxy: 0.88, workers: 4}
+
+# GEMINI PRO -- the authoritative Gemini row for BOTH blocks (frozen + live).
+#
+# WHY 2.5-pro AND NOT A 3.x MODEL. It is the only STABLE (non-preview) pro-tier
+# Gemini: gemini-3-pro-preview and gemini-3.1-pro-preview are previews Google can
+# change under a submitted paper, and gemini-pro-latest is a moving alias.
+# Pro tier is the point -- gpt-5.5 is a frontier reasoning model, so pairing it
+# with a lightweight Gemini would confound "vendor" with "capability tier".
+# The residual mismatch is GENERATIONAL (2.5 vs OpenAI's current 5.5) and must be
+# stated in limitations; no stable Gemini is both pro-tier and current-generation.
+#
+# REQUIRES BILLING. Measured 2026-08-02 on the free-tier key: 429 on the very
+# first call, quotaId GenerateContentInputTokensPerModelPerDay-FreeTier -- the
+# free allowance appears to be 0, so no amount of waiting or multi-day warming
+# converges. gemini-3.5-flash-lite is the free fallback but is NOT tier-matched.
+#
+# USE THE SAME MODEL IN BOTH BLOCKS. run_live.py/-variance.py default to
+# gemini-2.5-pro for --vendor gemini precisely so the live arm cannot silently
+# drift to a different model than this row. Frozen-on-pro + live-on-flash-lite
+# would break the paper's "two evaluation paradigms on one clinical domain"
+# framing: the paradigm difference would be confounded with a model difference.
+#
+# capability_proxy 0.80 is a PLACEHOLDER, and a weaker one than the other rows':
+# whether a previous-generation Pro sits above or below the same-vendor
+# gemini-3.5-flash is a cross-generation comparison this repo has no measurement
+# for. Do not read the scaling plot's Google ordering as meaningful.
+#
+# cache_path is present because this row is a single-model characterisation, not
+# a variance sample: if the target project is rate-limited, warm_llm_cache.py can
+# chip away across days. NOTE the cache key now includes the sampling profile, so
+# a stale cache from the temperature=0 era is a MISS, not a silent stale hit.
+real_gemini_pro:
+  - {slot: frontier_F, kind: gemini, model_id: "gemini-2.5-pro", capability_proxy: 0.80, workers: 1, cache_path: "results/variant/real/.cache/frontier_F.json"}
+
+# THE TWO VENDORS THE PAPER'S FROZEN-POOL COMPARISON ACTUALLY USES, PURE API
+# MODE, no config editing needed. gpt-5.5 is the headline model; gemini-2.5-pro
+# is the second vendor (Table tab:agents: both "frozen + live"). This is the
+# block to use for a from-scratch reproduction of the frozen-pool numbers:
+#   python scripts/variant/run_benchmark.py --cohort data/sample/cohort_full_real.parquet \
+#       --models real_all_api --robustness --outdir results/variant/real_all_api
+#
+# claude-sonnet-5 is DELIBERATELY NOT in this block -- the paper never runs it
+# through the frozen-pool sweep (see real_claude_api's comment above). Add it
+# yourself only if you want to extend the comparison beyond the paper.
+real_all_api:
+  - {slot: frontier_B, kind: openai, model_id: "gpt-5.5-2026-04-23", capability_proxy: 0.88, workers: 8}
+  - {slot: frontier_F, kind: gemini, model_id: "gemini-2.5-pro",     capability_proxy: 0.80, workers: 1}

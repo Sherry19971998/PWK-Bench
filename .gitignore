@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.venv/
+# API keys — never commit. Loaded with:  set -a; source .env; set +a
+.env
+*.env
+!example.env
+# benchmark outputs (now written under per-domain subdirs, e.g. results/variant/)
+results/
+figures/
+data/real/

@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pwkbench"
+version = "0.1.0"
+description = "PWK-Bench: benchmarking information-acquisition strategies for biomedical agents"
+# 3.9, not 3.10: this is what the project actually runs on and is tested against.
+# It was declared >=3.10 while every module that uses `X | Y` annotations carried
+# `from __future__ import annotations` anyway, so the mismatch stayed invisible
+# until a new annotation was added without it and import failed at runtime.
+# Any new `X | Y` annotation needs that future import; nothing else here is
+# 3.10-only.
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.24", "scipy>=1.10", "scikit-learn>=1.3", "pandas>=2.0",
+    "matplotlib>=3.7", "pyyaml>=6.0", "tqdm>=4.65", "pyarrow>=12.0",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.40"]
+openai = ["openai>=1.40"]
+gemini = ["google-genai>=0.3"]
+hf = ["transformers>=4.44", "torch>=2.2"]
+fetch = ["requests>=2.31"]              # real-data fetch scripts (ClinVar/gnomAD/AlphaMissense)
+dev = ["pytest>=7.4", "requests>=2.31", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+include = ["pwkbench*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+
+# ---------------------------------------------------------------------------
+# Lint. Run:  ruff check pwkbench scripts tests
+#
+# The selection is deliberately narrow: rules that catch BUGS, not rules that
+# enforce a house style. A first full-strictness pass over this repo produced 183
+# findings of which exactly 3 were real defects; the other 180 were import
+# ordering, shebang bits and magic numbers in test assertions. Reformatting
+# validated numerical code to silence those would create a large diff for no
+# behavioural gain and would make a genuine regression harder to spot in review.
+# Widen this list when a rule earns its place by catching something real.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "F",       # pyflakes: undefined names, unused imports, redefinitions
+    "E9",      # syntax / IO errors
+    "B",       # bugbear: mutable defaults, closure-over-loop-variable, ...
+    "PLE",     # pylint errors
+    "PLR0124", # comparison with itself
+    "PLW",     # pylint warnings (subprocess without check, ...)
+    "RUF01",   # implicit Optional, ...
+    "UP",      # outdated syntax that newer Pythons changed the meaning of
+]
+ignore = [
+    # Intentional throughout: a swallowed exception here is a deliberate
+    # isolation boundary, and each site documents why (e.g. run_live.py keeps a
+    # single failed variant from discarding several hundred paid dialogues;
+    # tools.py must degrade a dead upstream to "no evidence", not a crash).
+    "BLE001",
+    # Loop variables kept for readability where only the iteration count matters.
+    "B007",
+    # zip() strict= is py3.10+; the call sites zip equal-length arrays by
+    # construction and adding it would not catch anything here.
+    "B905",
+    # Rebinding the loop variable is the intended idiom at every site here
+    # (`idx = np.array(idx)`, `ch = ch[mask]`): the converted value is what the
+    # rest of the body wants, and introducing a second name would only add noise.
+    "PLW2901",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test assertions read better with the threshold inline than behind a constant.
+# PLW1510: the entry-point test already asserts `returncode == 0` on the next
+# line and prints the child's stderr, which is a better failure message than the
+# CalledProcessError that `check=True` would raise.
+"tests/*" = ["PLR2004", "PLW1510"]
