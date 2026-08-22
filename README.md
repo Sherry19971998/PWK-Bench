@@ -21,14 +21,14 @@ pip install -e ".[dev]"
 Model credentials are read only from environment variables:
 `OPENAI_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`.
 
-## Quick Sanity Check (no API spend)
+## Quick Sanity Check
 
 ```bash
 pytest -q
 python scripts/variant/run_benchmark.py --demo
 ```
 
-## Data Scope (minimal)
+## Data Scope
 
 | Data source | Role |
 |---|---|
