@@ -1,5 +1,13 @@
 # PWK-Bench
 
+Submission snapshot for IEEE BigData 2026:
+`v1.0-ieee-bigdata-2026-submission`
+
+This repository is the public, fixed-code snapshot referenced by the paper
+submission. The manuscript is self-contained for core claims; this repo provides
+the executable code paths, complete output tables, and extended robustness
+artifacts used to reproduce those claims.
+
 PWK-Bench (Planning What to Know Benchmark) is the benchmark and
 reference code release for **"More Evidence Is Not Always Better:
 Benchmarking Evidence Acquisition in Biomedical Agents."** Given a query
@@ -79,7 +87,7 @@ panel is stamped "SYNTHETIC — illustrative only"; real models replace it.
 
 | Axis | Question | Metric |
 |---|---|---|
-| **A. Acquisition efficiency** | what / how much | `A(k)` per-gene ranking AUC; AE, oracle gap `Δ`, budget-to-target `k*` |
+| **A. Acquisition efficiency** | what / how much | `A(k)` per-gene ranking AUC; PE, oracle gap `Δ`, budget-to-target `k*` |
 | **B. Order alignment** | which to acquire next | prefix-set overlap (primary) and Spearman `ρ` (secondary) vs. relevance and per-variant decisiveness orders |
 | **C. Memorization control** | is acquisition necessary? | closed-book masked AUC vs. chance |
 
