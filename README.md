@@ -21,6 +21,10 @@ navigation) plus block-level READMEs (exact commands, output files, caveats).
 This mirrors the execution structure and keeps method details close to the
 scripts that implement them.
 
+For scope clarity: the current submitted PDF's main reproduction path is
+variant + live only. SPHERE is kept in this repo as an optional extra domain
+experiment, not part of the submitted-paper headline claims.
+
 ## Repository Layout
 
 ```text
@@ -29,7 +33,7 @@ scripts that implement them.
 ├── scripts/
 │   ├── variant/            frozen evidence pool -- run + reproduce (README here)
 │   ├── live/               live tool-using agent + RQ3 masking check (README here)
-│   ├── sphere/             second domain, synthetic ADRC cohort (README here)
+│   ├── sphere/             optional extra-domain sandbox (not in submitted-paper core path)
 │   └── analysis/           supplementary robustness checks (README here)
 ├── configs/models.yaml     model matrix (demo / real_all_api / ...)
 ├── data/                   bundled cohorts -- real vs. synthetic (README here)
@@ -52,7 +56,7 @@ breakdown (including the RQ3 masking-check cohorts). In short:
 |---|---|---|
 | `data/sample/cohort_variant_synthetic.parquet` | Fully synthetic toy cohort | `--demo` only — a pipeline check, never the paper's numbers |
 | `data/sample/cohort_full_real.parquet` | Fully real, already-annotated 491-variant cohort — no fetch step needed | Real runs — this is what the paper's headline numbers come from |
-| `data/sphere/` | Stanford ADRC's own SPHERE release (officially synthetic) | Second-domain transfer check only, no clinical claim |
+| `data/sphere/` | Stanford ADRC's own SPHERE release (officially synthetic) | Optional extra-domain sandbox only; not required for submitted-paper reproduction |
 
 ## Install
 
@@ -150,11 +154,10 @@ bundled one, see [`docs/variant/real_data.md`](docs/variant/real_data.md)
 (exact public sources: ClinVar ≥2-star, gnomAD v4, gnomAD constraint,
 AlphaMissense).
 
-## Supplementary and transfer checks (not the main real-cohort headline)
+## Optional extras not required for submitted-paper reproduction
 
-SPHERE is included because it is reported in the paper as a second-domain
-transfer/sensitivity check. It is not part of the main real-cohort headline
-numbers.
+SPHERE is provided as an optional extra-domain sandbox. It is not in the
+submitted-paper core reproduction path.
 
 - **SPHERE (second domain)** — synthetic multi-modal transfer check:
   ```bash
