@@ -28,6 +28,14 @@ pytest -q
 python scripts/variant/run_benchmark.py --demo
 ```
 
+## Data Scope (minimal)
+
+| Data source | Role |
+|---|---|
+| `data/sample/cohort_variant_synthetic.parquet` | toy demo only (`--demo`), not paper headline numbers |
+| `data/sample/cohort_full_real.parquet` | main real-cohort reproduction (paper core) |
+| `data/sphere/` | future-work extension track only |
+
 ## Main Reproduction Path (paper core)
 
 Run these blocks for the paper's main real-cohort claims (491-variant ClinVar
@@ -67,7 +75,18 @@ Reference bounds are the fixed global relevance order (RelMax, lower
 reference) and the exactly enumerable cohort-level measurement ceiling (upper
 reference).
 
+## Output Mapping (Code -> Paper-facing artifacts)
+
+- Frozen core curves/strategy metrics: `results/variant/*/results.csv`
+- Live trajectories/stopping behavior: `results/live/trajectories_*.csv`
+- Clinical yield and paired significance: `results/variant/*/clinical_yield.csv`, `results/variant/*/yield_significance.csv`
+- Reliability/sensitivity probes: `results/variant/*/circularity_robustness.csv`, `results/variant/*/clinvar_circularity_probe.csv`
+- Masking/closed-book controls: `figures/live/consequence_mask.png` and related masked outputs
+
 ## More Details
+
+This root README is the shortest run path; block-level READMEs contain full
+command matrices, caveats, and complete output inventories.
 
 - Variant details and full output list: [scripts/variant/README.md](scripts/variant/README.md)
 - Live details and run caveats: [scripts/live/README.md](scripts/live/README.md)
