@@ -7,14 +7,8 @@ Acquisition in Biomedical Agents."**
 Core question: under a query budget, does an agent acquire the right evidence,
 in the right order, and stop when enough evidence has been acquired?
 
-## Scope At A Glance
-
-- **In submitted-paper core reproduction path:** `variant` + `live`
-- **Not in submitted-paper core path:** `sphere` (future-work extension track)
-
-This repository intentionally uses one short root README plus block-level
-READMEs. The root README answers "what should I run first?". Block READMEs
-contain full command matrices, caveats, and output details.
+Submitted-paper core reproduction path is variant + live; sphere is kept only
+as a future-work extension track.
 
 ## Install
 
