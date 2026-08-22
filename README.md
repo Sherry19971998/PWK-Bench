@@ -1,13 +1,5 @@
 # PWK-Bench
 
-Submission snapshot for IEEE BigData 2026:
-`v1.0-ieee-bigdata-2026-submission`
-
-This repository is the public, fixed-code snapshot referenced by the paper
-submission. The manuscript is self-contained for core claims; this repo provides
-the executable code paths, complete output tables, and extended robustness
-artifacts used to reproduce those claims.
-
 PWK-Bench (Planning What to Know Benchmark) is the benchmark and
 reference code release for **"More Evidence Is Not Always Better:
 Benchmarking Evidence Acquisition in Biomedical Agents."** Given a query
@@ -83,17 +75,43 @@ its capability proxy to how often it follows the relevance order, so the
 demo scaling trend is a constructive artifact (it can even invert) and the
 panel is stamped "SYNTHETIC — illustrative only"; real models replace it.
 
-## What it computes
+## Paper-aligned Metrics (RQ1-RQ4)
 
-| Axis | Question | Metric |
+| RQ | Question | Primary metrics |
 |---|---|---|
-| **A. Acquisition efficiency** | what / how much | `A(k)` per-gene ranking AUC; PE, oracle gap `Δ`, budget-to-target `k*` |
-| **B. Order alignment** | which to acquire next | prefix-set overlap (primary) and Spearman `ρ` (secondary) vs. relevance and per-variant decisiveness orders |
-| **C. Memorization control** | is acquisition necessary? | closed-book masked AUC vs. chance |
+| **RQ1** | Marginal value of additional evidence; live stopping vs retrospective sufficiency | Frozen: `A(k)` (per-gene macro AUC), peak-to-final decline `max_k A(k)-A(K)`, clinical yield/resolution. Live: exceedance rate, mean over-acquisition |
+| **RQ2** | Acquisition efficiency and order adaptation | `AE = mean_k A(k)`, `ΔOracle`, prefix overlap (`PO_rel`, `PO_dec`), secondary Spearman alignment (`ρ_rel`, `ρ_dec`) |
+| **RQ3** | Acquisition-attributable signal vs closed-book signal | `G_acq = AUC_acq - AUC_HGVS`, plus masking controls (consequence mask, strongest mask) |
+| **RQ4** | Reliability and sensitivity | run-to-run disagreement, cross-model live comparison, provenance/domain/context/cost sensitivity, calibration checks |
 
 Two references bracket every agent: **RelMax** (one fixed global relevance
 order, lower reference) and the cohort-level **measurement ceiling**
 (exactly enumerable with 4 evidence categories, upper reference).
+
+## Output Mapping (Code -> Paper Tables/Figures)
+
+The repository does not treat GitHub text as a replacement for core paper
+results; key claims remain in the manuscript. For reproducibility, the scripts
+emit structured outputs that map to those claims:
+
+- Frozen core curves and strategy metrics:
+  `results/variant/*/results.csv`
+- Clinical yield and paired significance:
+  `results/variant/*/clinical_yield.csv`,
+  `results/variant/*/yield_significance.csv`,
+  `results/variant/*/yield_sensitivity.csv`
+- Run-to-run variance (frozen):
+  `results/variant/variance/variance_*.csv`
+- Live trajectories and stopping metrics:
+  `results/live/trajectories_*.csv`
+- Provenance/circularity sensitivity:
+  `results/variant/*/circularity_robustness.csv`,
+  `results/variant/*/clinvar_circularity_probe.csv`
+- Domain-level sensitivity:
+  `results/variant/*/domain_gap*.csv`,
+  `results/live/domain_*.png`
+- Closed-book and masking controls:
+  `figures/live/consequence_mask.png`, related masked trajectory outputs
 
 ## Reproducing the paper's real numbers
 
