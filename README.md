@@ -16,6 +16,11 @@ Model credentials are read only from environment variables
 (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`). No API key is
 stored in this repository.
 
+The release is intentionally split into a short root README (paper-level
+navigation) plus block-level READMEs (exact commands, output files, caveats).
+This mirrors the execution structure and keeps method details close to the
+scripts that implement them.
+
 ## Repository Layout
 
 ```text
@@ -146,6 +151,10 @@ bundled one, see [`docs/variant/real_data.md`](docs/variant/real_data.md)
 AlphaMissense).
 
 ## Supplementary and transfer checks (not the main real-cohort headline)
+
+SPHERE is included because it is reported in the paper as a second-domain
+transfer/sensitivity check. It is not part of the main real-cohort headline
+numbers.
 
 - **SPHERE (second domain)** — synthetic multi-modal transfer check:
   ```bash
