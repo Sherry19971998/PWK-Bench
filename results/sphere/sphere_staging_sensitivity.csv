@@ -1,0 +1,81 @@
+budget_k,added_channel,cost_rank,cum_auc,n_fixed,n_features,cognitive_cols,seed,staging_cols_excluded
+1,cognitive,1,0.8737142857142857,221,62,neuropsych only (staging excluded),0,11
+2,biomarkers,2,0.8688888888888888,221,65,neuropsych only (staging excluded),0,11
+3,wgs,3,0.8116190476190475,221,232,neuropsych only (staging excluded),0,11
+4,plasma,3,0.8356825396825398,221,732,neuropsych only (staging excluded),0,11
+1,cognitive,1,0.8641904761904762,221,62,neuropsych only (staging excluded),1,11
+2,biomarkers,2,0.8678730158730158,221,65,neuropsych only (staging excluded),1,11
+3,wgs,3,0.8019047619047619,221,232,neuropsych only (staging excluded),1,11
+4,plasma,3,0.8155555555555555,221,732,neuropsych only (staging excluded),1,11
+1,cognitive,1,0.8525079365079364,221,62,neuropsych only (staging excluded),2,11
+2,biomarkers,2,0.8481269841269843,221,65,neuropsych only (staging excluded),2,11
+3,wgs,3,0.8117460317460317,221,232,neuropsych only (staging excluded),2,11
+4,plasma,3,0.849968253968254,221,732,neuropsych only (staging excluded),2,11
+1,cognitive,1,0.8546031746031746,221,62,neuropsych only (staging excluded),3,11
+2,biomarkers,2,0.8482539682539683,221,65,neuropsych only (staging excluded),3,11
+3,wgs,3,0.8116825396825396,221,232,neuropsych only (staging excluded),3,11
+4,plasma,3,0.8746031746031745,221,732,neuropsych only (staging excluded),3,11
+1,cognitive,1,0.8555555555555555,221,62,neuropsych only (staging excluded),4,11
+2,biomarkers,2,0.8553015873015873,221,65,neuropsych only (staging excluded),4,11
+3,wgs,3,0.8151746031746032,221,232,neuropsych only (staging excluded),4,11
+4,plasma,3,0.8483174603174604,221,732,neuropsych only (staging excluded),4,11
+1,cognitive,1,0.860888888888889,221,62,neuropsych only (staging excluded),5,11
+2,biomarkers,2,0.8684444444444445,221,65,neuropsych only (staging excluded),5,11
+3,wgs,3,0.7974603174603174,221,232,neuropsych only (staging excluded),5,11
+4,plasma,3,0.8280000000000001,221,732,neuropsych only (staging excluded),5,11
+1,cognitive,1,0.8633650793650794,221,62,neuropsych only (staging excluded),6,11
+2,biomarkers,2,0.8643809523809522,221,65,neuropsych only (staging excluded),6,11
+3,wgs,3,0.8057777777777778,221,232,neuropsych only (staging excluded),6,11
+4,plasma,3,0.8523174603174603,221,732,neuropsych only (staging excluded),6,11
+1,cognitive,1,0.8763809523809524,221,62,neuropsych only (staging excluded),7,11
+2,biomarkers,2,0.8718095238095238,221,65,neuropsych only (staging excluded),7,11
+3,wgs,3,0.7913015873015874,221,232,neuropsych only (staging excluded),7,11
+4,plasma,3,0.8337777777777777,221,732,neuropsych only (staging excluded),7,11
+1,cognitive,1,0.8655873015873017,221,62,neuropsych only (staging excluded),8,11
+2,biomarkers,2,0.8618412698412697,221,65,neuropsych only (staging excluded),8,11
+3,wgs,3,0.791047619047619,221,232,neuropsych only (staging excluded),8,11
+4,plasma,3,0.8280634920634921,221,732,neuropsych only (staging excluded),8,11
+1,cognitive,1,0.8837460317460316,221,62,neuropsych only (staging excluded),9,11
+2,biomarkers,2,0.8798730158730159,221,65,neuropsych only (staging excluded),9,11
+3,wgs,3,0.8208253968253969,221,232,neuropsych only (staging excluded),9,11
+4,plasma,3,0.8353650793650793,221,732,neuropsych only (staging excluded),9,11
+1,cognitive,1,0.8737142857142857,221,73,all (staging included),0,11
+2,biomarkers,2,0.8715555555555555,221,76,all (staging included),0,11
+3,wgs,3,0.8192380952380953,221,243,all (staging included),0,11
+4,plasma,3,0.8499047619047619,221,743,all (staging included),0,11
+1,cognitive,1,0.8716190476190476,221,73,all (staging included),1,11
+2,biomarkers,2,0.8665396825396824,221,76,all (staging included),1,11
+3,wgs,3,0.8114285714285714,221,243,all (staging included),1,11
+4,plasma,3,0.8395555555555555,221,743,all (staging included),1,11
+1,cognitive,1,0.8588571428571429,221,73,all (staging included),2,11
+2,biomarkers,2,0.8582857142857143,221,76,all (staging included),2,11
+3,wgs,3,0.8201269841269841,221,243,all (staging included),2,11
+4,plasma,3,0.8662222222222221,221,743,all (staging included),2,11
+1,cognitive,1,0.8667301587301587,221,73,all (staging included),3,11
+2,biomarkers,2,0.8596825396825396,221,76,all (staging included),3,11
+3,wgs,3,0.8201904761904762,221,243,all (staging included),3,11
+4,plasma,3,0.8825396825396826,221,743,all (staging included),3,11
+1,cognitive,1,0.8678095238095238,221,73,all (staging included),4,11
+2,biomarkers,2,0.8570158730158729,221,76,all (staging included),4,11
+3,wgs,3,0.8316190476190476,221,243,all (staging included),4,11
+4,plasma,3,0.8627301587301588,221,743,all (staging included),4,11
+1,cognitive,1,0.8772063492063491,221,73,all (staging included),5,11
+2,biomarkers,2,0.8740952380952383,221,76,all (staging included),5,11
+3,wgs,3,0.8083174603174603,221,243,all (staging included),5,11
+4,plasma,3,0.8475555555555555,221,743,all (staging included),5,11
+1,cognitive,1,0.8736507936507938,221,73,all (staging included),6,11
+2,biomarkers,2,0.869015873015873,221,76,all (staging included),6,11
+3,wgs,3,0.8290793650793651,221,243,all (staging included),6,11
+4,plasma,3,0.8658412698412699,221,743,all (staging included),6,11
+1,cognitive,1,0.894095238095238,221,73,all (staging included),7,11
+2,biomarkers,2,0.8878095238095238,221,76,all (staging included),7,11
+3,wgs,3,0.7986666666666666,221,243,all (staging included),7,11
+4,plasma,3,0.8562539682539683,221,743,all (staging included),7,11
+1,cognitive,1,0.878984126984127,221,73,all (staging included),8,11
+2,biomarkers,2,0.8651428571428571,221,76,all (staging included),8,11
+3,wgs,3,0.8021587301587303,221,243,all (staging included),8,11
+4,plasma,3,0.8462222222222222,221,743,all (staging included),8,11
+1,cognitive,1,0.8914285714285715,221,73,all (staging included),9,11
+2,biomarkers,2,0.8868571428571428,221,76,all (staging included),9,11
+3,wgs,3,0.8286984126984128,221,243,all (staging included),9,11
+4,plasma,3,0.8567619047619047,221,743,all (staging included),9,11

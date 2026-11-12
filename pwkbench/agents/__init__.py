@@ -12,7 +12,8 @@ def build_agent(kind: str, model_id: str, name: str | None = None,
                 adherence: float = 0.85, seed: int = 0, context: bool = False,
                 max_workers: int = 1, cache_path: str | None = None,
                 randomize_channel_order: bool = False,
-                allow_stop: bool = False, stop_wording: str = "default"):
+                allow_stop: bool = False, stop_wording: str = "default",
+                orders_path: str | None = None):
     """Factory. kind in {mock, anthropic, claude_cli, openai, gemini, hf}.
     `claude_cli` reaches Claude through the Claude Code CLI instead of the
     Messages API (no ANTHROPIC_API_KEY needed) -- read ClaudeCLIAgent's
@@ -29,7 +30,12 @@ def build_agent(kind: str, model_id: str, name: str | None = None,
     `allow_stop` (real agents only) offers the agent an explicit STOP action, so
     the number of categories acquired becomes the agent's decision rather than a
     budget the harness imposes; the agent then exposes `stop_k` alongside its
-    order. Default False, which reproduces every previously reported number."""
+    order. Default False, which reproduces every previously reported number.
+    `recorded` replays per-variant orders from `orders_path` (a file written by
+    a previous real run); it makes no model call -- see agents/recorded.py."""
+    if kind == "recorded":
+        from .recorded import RecordedOrderAgent
+        return RecordedOrderAgent(orders_path, name=name, model_id=model_id or None)
     if kind == "mock":
         return MockAgent(adherence=adherence, seed=seed, model_id=model_id,
                          context=context)

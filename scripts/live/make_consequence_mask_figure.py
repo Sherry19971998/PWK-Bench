@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Consequence-and-coordinate masking (E4): is the closed-book floor read off
+"""Consequence and HGVS-name masking (E4): is the closed-book floor read off
 the name, or acquired?
 
 WHY THIS FIGURE EXISTS
@@ -21,12 +21,16 @@ THE THREE-STEP ARGUMENT
     (`p.Arg213Ter` -> `p.?`, `pwkbench/live/tools.py::mask_consequence`)
     removes the free-readable loss-of-function signal. Accuracy drops by
     0.072 -- real, but modest.
-  * STRONGEST MASK (consequence + coordinate identity) = 0.621. Masking gene
-    identity ON TOP of consequence removes far more: a further 0.173 drop,
-    more than double the consequence-only effect. MOST of the 0.866->0.621
-    gap is the coordinate mask, not the consequence mask -- do not caption
-    this "masking the consequence token drops accuracy to 0.621"; that
-    conflates the two.
+  * STRONGEST MASK (HGVS name -> genomic coordinates) = 0.621. The whole
+    HGVS name (c.- and p.-level) is replaced by `chr:pos:ref>alt`
+    (data/masked/cohort_full_real_masked_coords.parquet); GENE IDENTITY IS
+    RETAINED (the live prompt still sends `Gene: <gene>`), and the genomic
+    coordinates themselves are shown, not hidden. Removing the remaining
+    c.-level HGVS annotation costs a further 0.173, more than double the
+    p.-only effect. MOST of the 0.866->0.621 gap is the HGVS-removal step,
+    not the p.-consequence step -- do not caption this "masking the
+    consequence token drops accuracy to 0.621", and do not describe it as
+    masking gene or coordinate identity: neither is masked.
   * CLAUDE-SONNET-5, same strongest mask = 0.616 (485/491 valid; 6 cases
     ended in `error:nonzero_exit` and are excluded, NOT counted as
     incorrect). Drawn as a second, hatched bar in the same shade as the
@@ -87,9 +91,9 @@ def main():
          f"n={full_n}"),
         ("consequence\nmasked", conseq_acc, FS.STEEL, False,
          f"n={conseq_n}"),
-        ("strongest mask\n(gpt-5.5)", strong_gpt_acc, FS.SKY, False,
+        ("HGVS→coords, gene kept\n(gpt-5.5)", strong_gpt_acc, FS.SKY, False,
          f"n={strong_gpt_n}"),
-        ("strongest mask\n(claude-sonnet-5)", strong_claude_acc, FS.SKY, True,
+        ("HGVS→coords, gene kept\n(claude-sonnet-5, CLI)", strong_claude_acc, FS.SKY, True,
          f"n={claude_valid}/{claude_n} valid"),
     ]
 
@@ -133,13 +137,13 @@ def main():
                 arrowprops=dict(arrowstyle="<->", color=FS.ACCENT, lw=2.0))
     ax.text((strong_gpt_acc + full_acc) / 2, 3.78,
             f"total drop −{total_drop:.3f}  "
-            f"(consequence −{conseq_drop:.3f}, coordinate −{coord_drop:.3f})",
+            f"(p. consequence −{conseq_drop:.3f}, rest of HGVS −{coord_drop:.3f})",
             ha="center", va="top", fontsize=12.5, fontweight="bold",
             color=FS.ACCENT)
     ax.set_ylim(4.35, -.95)
 
     ax.set_title(
-        "Coordinate masking, not consequence masking alone, drives the drop",
+        "Removing the HGVS name, not the p. consequence alone, drives the drop",
         fontsize=15, fontweight="bold", color=FS.INK, loc="left", pad=12)
 
     fig.tight_layout()
@@ -149,7 +153,7 @@ def main():
     for lab, v, _, _, note in rows:
         print(f"  {lab.replace(chr(10), ' '):32s} {v:.3f}  {note}")
     print(f"  total drop (full -> gpt-5.5 strongest mask): {total_drop:.3f}")
-    print(f"  of which consequence-only: {conseq_drop:.3f}, coordinate: {coord_drop:.3f}")
+    print(f"  of which p.-consequence: {conseq_drop:.3f}, rest of HGVS: {coord_drop:.3f}")
     return 0
 
 

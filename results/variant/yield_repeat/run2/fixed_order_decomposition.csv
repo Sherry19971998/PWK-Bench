@@ -1,0 +1,7 @@
+reference,PE
+RelMax(label-free),0.8496313582251082
+BestFixed(label-cond),0.8525004509379509
+Oracle(per-instance),0.8926113816738817
+gap: Oracle-BestFixed (adaptation),0.04011093073593075
+gap: BestFixed-RelMax (fixed-order choice),0.002869092712842747
+gap: Oracle-RelMax (total headroom),0.0429800234487735

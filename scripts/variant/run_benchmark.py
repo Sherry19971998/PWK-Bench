@@ -95,6 +95,11 @@ def main():
                     help="results dir (default: results/<domain>)")
     ap.add_argument("--figdir", default=None,
                     help="figures dir (default: figures/<domain>)")
+    ap.add_argument("--replay-orders", default=None, metavar="PATH",
+                    help="score RECORDED agent orders instead of calling models: "
+                         "a CSV, or a directory of CSVs, as written to "
+                         "<outdir>/agent_orders/ by a previous real run. "
+                         "Overrides --models; makes no API call.")
     args = ap.parse_args()
     if args.demo and args.cohort:
         ap.error("--demo (synthetic) and --cohort (real parquet) are mutually "
@@ -118,6 +123,15 @@ def main():
                      f"Available: {', '.join(k for k in cfg)}")
         matrix = cfg.get(args.models)
 
+    if args.replay_orders:
+        import glob
+        p = args.replay_orders
+        files = sorted(glob.glob(os.path.join(p, "*.csv"))) if os.path.isdir(p) else [p]
+        if not files or not all(os.path.isfile(f) for f in files):
+            ap.error(f"--replay-orders: no recorded order CSV found at {p!r}")
+        matrix = [{"slot": os.path.splitext(os.path.basename(f))[0],
+                   "kind": "recorded", "orders_path": f} for f in files]
+
     # Guard against silently running MOCK agents on a REAL cohort: --cohort
     # loads real data, but --models defaults to "demo" (mock adapters), which
     # would produce a plausible-looking results.csv that is NOT a real-model
@@ -135,6 +149,9 @@ def main():
     os.makedirs(args.figdir, exist_ok=True)
     df.to_csv(f"{args.outdir}/results.csv", index=False)
     json.dump(df.to_dict(orient="records"), open(f"{args.outdir}/results.json", "w"), indent=2)
+    # Persist each agent's per-variant order so this run can be re-scored
+    # offline later (run_agent.py --replay <outdir>/agent_orders).
+    harness.save_agent_orders(cohort, matrix, args.outdir)
 
     if args.robustness:
         import numpy as np

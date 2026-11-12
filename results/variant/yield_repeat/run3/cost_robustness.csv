@@ -1,0 +1,4 @@
+caliber,rank,top_strategy_invariant,full_order_invariant
+per_query,RelMax|Heuristic,True,True
+per_token,RelMax|Heuristic,True,True
+per_monetary_cost,RelMax|Heuristic,True,True

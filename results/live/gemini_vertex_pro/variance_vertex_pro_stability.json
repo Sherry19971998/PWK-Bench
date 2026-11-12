@@ -1,0 +1,14 @@
+{
+  "common_cases": 491,
+  "identical_frac": 0.45010183299389,
+  "n_differing": 270,
+  "model": {
+    "requested": [
+      "gemini-2.5-pro"
+    ],
+    "served": [
+      "gemini-2.5-pro"
+    ],
+    "unverified_runs": []
+  }
+}

@@ -60,7 +60,78 @@ python scripts/live/run_live.py --vendor gemini --tag gemini
 ```
 
 Outputs are written to `results/variant/*`, `results/live/*`,
-`figures/variant/*`, and `figures/live/*`.
+`figures/variant/*`, and `figures/live/*`. A frozen-pool run also writes
+`<outdir>/agent_orders/<slot>.csv` (each agent's per-variant acquisition
+order), which can be re-scored later with no model call:
+
+```bash
+python scripts/variant/run_agent.py \
+  --replay results/variant/real_full/agent_orders \
+  --cohort data/sample/cohort_full_real.parquet \
+  --outdir results/variant/replay
+```
+
+`--replay` only scores recorded order files and fails if any cohort variant
+has none. `--demo` is the synthetic mock pipeline check. It is not a replay
+of any real model run.
+
+## Reproducibility Scope
+
+**Recomputable offline from this release (no API call):** the 491-variant
+cohort and its labels, the reference strategies (RelMax, Heuristic, Greedy,
+Oracle) with their A(k), AE, and clinical-yield numbers, the sufficiency
+reference, and the RQ3 logistic probes.
+
+**Recomputable offline from the released run outputs in `results/`:** the
+original LLM trajectories and tool-call logs from the paper's runs. These
+include the three live gpt-5.5 runs (`results/live/trajectories_full*.csv`),
+the three live gemini-2.5-pro runs (`results/live/gemini_vertex_pro/`), the
+closed-book and masking arms (`results/live/masked/`,
+`results/live/claude_code/`), the tool ablations, and the live tool cache
+(`results/live/.tool_cache.json`). From these, the figure and analysis
+scripts reproduce live exceedance (62.0% ± 2.6%), the 3-run disagreement
+(61/491), and the masked accuracies (0.794, 0.621, Claude 0.616 on 485/491
+valid) with no API call. The tool cache covers every tool call in the
+gpt-5.5 live runs. For the three gemini-2.5-pro live runs it covers about
+98% of calls (34 distinct variant–tool responses are missing). Gemini
+metrics are fully recomputable from the released trajectories, but a cached
+re-run of Gemini would re-fetch those 34 responses live. Removed from the
+release: per-case Claude CLI
+scratch directories (`.work_full/`), a 12-case smoke run, and the cloud
+project ID in two run summaries.
+
+**Frozen-pool agent orders.** The per-variant orders of the paper's
+three frozen gpt-5.5 runs and three frozen gemini-2.5-pro runs (no context)
+were rebuilt offline from the released prompt caches with
+`scripts/variant/rebuild_orders_from_cache.py`. Every prompt hit the cache,
+and no API call was made. They are in
+`results/variant/variance/agent_orders/` and
+`results/variant/gemini_pro/variance_gemini_noctx/agent_orders/`. Replaying
+them reproduces the reported values (gpt-5.5 A(k) 0.807/0.917/0.837/0.807 in
+every run; gemini A(2) 0.810 ± 0.093, ρ_dec 0.373 ± 0.190):
+
+```bash
+python scripts/variant/run_agent.py --replay results/variant/variance/agent_orders \
+  --cohort data/sample/cohort_full_real.parquet --outdir results/variant/replay_gpt55
+```
+
+Not replayable from cache: the single `real_trusted` frozen run (no cache
+was kept; its summaries are in `results/variant/real_trusted/`) and the
+context-augmentation runs (two of their three caches are missing 3–10
+prompts). For these, the released summary CSVs are the record. A fresh paid
+re-run will not be bit-identical (see decoding below).
+
+**Decoding.** Temperature is never set. Frozen-pool API adapters send a seed
+where the endpoint accepts one and allow up to 2,000 output tokens per step.
+The live gpt-5.5 and Gemini runs use each vendor's default decoding with no
+seed.
+
+**Claude.** The paper's only Claude result, claude-sonnet-5 on the strongest
+masking condition (HGVS name replaced by genomic coordinates, gene
+retained), was run through the **Claude Code CLI**
+(`scripts/live/run_claude_code_notools.py`). The Anthropic API path
+(`run_live.py --vendor anthropic`) is a separate route and is not
+guaranteed to reproduce the CLI numbers.
 
 ## Paper Metrics Map (RQ1-RQ4)
 

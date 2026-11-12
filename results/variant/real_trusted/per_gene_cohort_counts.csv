@@ -1,0 +1,13 @@
+domain,gene,n,n_pos,n_neg
+hereditary_cancer,BRCA1,43,22,21
+hereditary_cancer,BRCA2,43,22,21
+hereditary_cancer,TP53,42,20,22
+hereditary_cancer,PTEN,42,20,22
+hereditary_cancer,MLH1,42,20,22
+hereditary_cancer,MSH2,42,20,22
+cardiomyopathy,MYH7,42,20,22
+cardiomyopathy,MYBPC3,42,20,22
+arrhythmia,KCNQ1,42,20,22
+arrhythmia,SCN5A,42,20,22
+lipid_disorder,LDLR,42,20,22
+lipid_disorder,PCSK9,27,5,22

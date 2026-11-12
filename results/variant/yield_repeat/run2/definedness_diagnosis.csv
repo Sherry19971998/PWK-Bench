@@ -1,0 +1,9 @@
+quantity,value
+PE RelMax(label-free),0.8496313582251082
+PE DefinednessBaseline(defined-first),0.8496313582251082
+PE DefinednessStratifiedBest(schema-optimal),0.8332205988455987
+PE Oracle(per-instance),0.8926113816738817
+gap Oracle-RelMax (total),0.0429800234487735
+gap explained by definedness/schema,-0.01641075937950942
+gap residual = genuine per-instance planning,0.05939078282828292
+fraction schema-explained,-0.38182295081967266

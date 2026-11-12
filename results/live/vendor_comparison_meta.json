@@ -1,0 +1,26 @@
+{
+  "openai_runs": [
+    "results/live/trajectories_full.csv",
+    "results/live/trajectories_full_r1.csv",
+    "results/live/trajectories_full_r2.csv"
+  ],
+  "gemini_runs": [
+    "results/live/gemini_vertex_pro/trajectories_vertex_pro_r0.csv",
+    "results/live/gemini_vertex_pro/trajectories_vertex_pro_r1.csv",
+    "results/live/gemini_vertex_pro/trajectories_vertex_pro_r2.csv"
+  ],
+  "openai_served": [
+    "gpt-5.5-2026-04-23"
+  ],
+  "gemini_served": [
+    "gemini-2.5-pro"
+  ],
+  "openai_backend": [
+    "api"
+  ],
+  "gemini_backend": [
+    "vertex"
+  ],
+  "n_cases": 491,
+  "n_sufficiency_defined": 193
+}

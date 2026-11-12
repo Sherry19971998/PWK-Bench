@@ -1,0 +1,3 @@
+model,budget,diff_vs_relmax,lo,hi,z_stat,p_raw,p_holm,reject_holm,includes_zero
+frontier_B,1,0.0,0.0,0.0,0.0,1.0,1.0,False,True
+frontier_D,1,0.0,0.0,0.0,0.0,1.0,1.0,False,True

@@ -1,0 +1,6 @@
+task,positive,negative,n,n_pos,n_neg,n_seeds,skipped,skip_reason,auc_cognitive,auc_cognitive_sd,auc_3mod,auc_3mod_sd,gain,gain_sd,frac_seeds_negative,n_features_3mod
+ad_vs_lbd,Probable Alzheimers Disease,Lewy Body Disease,59,46,13,25,False,,0.7579703703703704,0.05213591940652786,0.596237037037037,0.06324136705942227,-0.1617333333333333,0.08225848104978718,1.0,732
+ad_vs_mci,Probable Alzheimers Disease,Mild Cognitive Impairment,101,46,55,25,False,,0.7472484848484849,0.020182172067958273,0.7732929292929291,0.022251052617440134,0.026044444444444457,0.03191860162263697,0.24,732
+mci_vs_hc,Mild Cognitive Impairment,Healthy Control,230,55,175,25,False,,0.6710233766233766,0.021033893890360054,0.638025974025974,0.029884054725270493,-0.0329974025974026,0.029034081786956364,0.88,732
+ad_vs_pd,Probable Alzheimers Disease,Parkinsons Disease only,105,46,59,25,False,,0.8958397306397307,0.015141448457805679,0.8130909090909091,0.02589383572318523,-0.08274882154882154,0.021624002724540632,1.0,732
+ad_vs_pd_dementia,Probable Alzheimers Disease,Parkinsons Disease and Dementia,49,46,3,25,True,smallest class has 3 < 8 members,,,,,,,,732

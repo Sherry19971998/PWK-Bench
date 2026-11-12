@@ -1,0 +1,17 @@
+{
+  "common_cases": 491,
+  "identical_frac": 0.47046843177189407,
+  "n_differing": 260,
+  "spread_ge2_frac": 0.2525458248472505,
+  "n_spread_ge2": 124,
+  "spread_distribution": {
+    "0": 231,
+    "1": 136,
+    "2": 117,
+    "3": 6,
+    "4": 1
+  },
+  "answer_cases_scored": 491,
+  "answer_identical_frac": 0.8757637474541752,
+  "n_answer_differing": 61
+}

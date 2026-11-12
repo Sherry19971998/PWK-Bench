@@ -36,7 +36,8 @@ _AGENT_CACHE: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
 
 def _agent_key(m: dict) -> tuple:
     return (m.get("slot"), m.get("kind"), m.get("model_id", ""),
-            m.get("adherence", 0.85), m.get("seed", 0), bool(m.get("context", False)))
+            m.get("adherence", 0.85), m.get("seed", 0), bool(m.get("context", False)),
+            m.get("orders_path"))
 
 
 def agent_and_order(cohort: Cohort, m: dict):
@@ -50,9 +51,39 @@ def agent_and_order(cohort: Cohort, m: dict):
                             name=m.get("slot"), adherence=m.get("adherence", 0.85),
                             seed=m.get("seed", 0), context=m.get("context", False),
                             max_workers=m.get("workers", 1),
-                            cache_path=m.get("cache_path"))
+                            cache_path=m.get("cache_path"),
+                            orders_path=m.get("orders_path"))
         per_cohort[key] = (agent, agent.order(cohort))
     return per_cohort[key]
+
+
+def save_agent_orders(cohort: Cohort, model_matrix: list[dict] | None,
+                      outdir: str) -> list[str]:
+    """Write each agent's per-variant acquisition order to
+    `<outdir>/agent_orders/<slot>.csv` so the run can later be re-scored
+    offline with `run_agent.py --replay`. Reuses the memoized orders from
+    `harness.run` (no extra model calls). Rows skipped there (quota) are
+    skipped here too."""
+    import os
+    from .agents.recorded import write_orders
+    written = []
+    if not model_matrix:
+        return written
+    d = os.path.join(outdir, "agent_orders")
+    for m in model_matrix:
+        if m.get("kind") == "recorded":
+            continue                       # replaying already-recorded orders
+        key = _agent_key(m)
+        hit = _AGENT_CACHE.get(cohort, {}).get(key)
+        if hit is None:
+            continue
+        agent, order = hit
+        os.makedirs(d, exist_ok=True)
+        p = os.path.join(d, f"{m.get('slot')}.csv")
+        write_orders(p, cohort, order, agent.model_id,
+                     stop_k=getattr(agent, "stop_k", None))
+        written.append(p)
+    return written
 
 
 def clear_agent_cache():

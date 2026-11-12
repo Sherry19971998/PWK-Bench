@@ -1,0 +1,10 @@
+rule,mean_queries,resolved_frac,vus_frac,call_accuracy,balanced_call_accuracy,n_called,slot,model_id,stop_requests,parse_failures,forced_parse_failures,consequential_parse_failures,forced_steps,total_steps,run,stop_wording
+agent_stop:frontier_B,2.6171079429735236,0.35845213849287166,0.6415478615071283,1.0,1.0,176,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+agent_fixed_k1,1.0,0.3075356415478615,0.6924643584521385,1.0,1.0,151,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+agent_fixed_k2,2.0,0.3604887983706721,0.639511201629328,1.0,1.0,177,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+agent_fixed_k3,3.0,0.35845213849287166,0.6415478615071283,1.0,1.0,176,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+agent_fixed_k4,4.0,0.3890020366598778,0.6109979633401222,1.0,1.0,191,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+relmax_fixed_k1,1.0,0.3075356415478615,0.6924643584521385,1.0,1.0,151,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+relmax_fixed_k2,2.0,0.3604887983706721,0.639511201629328,1.0,1.0,177,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+relmax_fixed_k3,3.0,0.3625254582484725,0.6374745417515275,1.0,1.0,178,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit
+relmax_fixed_k4,4.0,0.3890020366598778,0.6109979633401222,1.0,1.0,191,frontier_B,gpt-5.5-2026-04-23,357,0,0,0,169,1642,2,explicit

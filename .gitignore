@@ -7,7 +7,7 @@ __pycache__/
 .env
 *.env
 !example.env
-# benchmark outputs (now written under per-domain subdirs, e.g. results/variant/)
-results/
+# benchmark outputs. results/ holds the released paper run outputs and is tracked;
+# figures/ is regenerated from it.
 figures/
 data/real/

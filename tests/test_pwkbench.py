@@ -244,7 +244,7 @@ def test_holm_bonferroni_monotone():
 
 def test_paper_named_entry_points_exist_and_run(tmp_path):
     """The scripts the paper's Experiments section cites (run_gate_4slot.py,
-    run_agent.py --replay, run_closed_book.py) must exist and run offline, so a
+    run_agent.py, run_closed_book.py) must exist and run offline, so a
     reviewer following the paper does not hit a missing-file error."""
     import subprocess, sys, os
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -261,7 +261,7 @@ def test_paper_named_entry_points_exist_and_run(tmp_path):
     cases = [
         ["scripts/variant/run_gate_4slot.py", "--demo", "--domain", "variant",
          "--outdir", out, "--figdir", fig],
-        ["scripts/variant/run_agent.py", "--replay", "--domain", "variant",
+        ["scripts/variant/run_agent.py", "--demo", "--domain", "variant",
          "--outdir", out, "--figdir", fig],
         ["scripts/variant/run_closed_book.py", "--demo", "--domain", "variant",
          "--outdir", out],
@@ -279,6 +279,48 @@ def test_paper_named_entry_points_exist_and_run(tmp_path):
     # <domain> subdir only appears in the default results/<domain> path).
     assert os.path.exists(os.path.join(out, "results.csv")), \
         "entry points did not write results.csv under --outdir"
+
+
+def test_replay_rescores_recorded_orders_exactly(tmp_path):
+    """run_agent.py --replay must re-score the orders a previous run RECORDED,
+    not silently run mock agents: a run writes agent_orders/<slot>.csv, and
+    replaying those files must reproduce every agent row of results.csv."""
+    import subprocess, sys, os
+    import pandas as pd
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env = dict(os.environ, PYTHONPATH=here + os.pathsep + os.environ.get("PYTHONPATH", ""))
+    a, b = str(tmp_path / "a"), str(tmp_path / "b")
+    run = lambda *c: subprocess.run([sys.executable, *c], cwd=here, env=env,
+                                    capture_output=True, text=True)
+    r = run("scripts/variant/run_benchmark.py", "--demo", "--outdir", a,
+            "--figdir", str(tmp_path / "fa"))
+    assert r.returncode == 0, r.stderr[-500:]
+    od = os.path.join(a, "agent_orders")
+    assert sorted(os.listdir(od))            # one CSV per agent slot
+    r = run("scripts/variant/run_benchmark.py", "--demo", "--replay-orders", od,
+            "--outdir", b, "--figdir", str(tmp_path / "fb"))
+    assert r.returncode == 0, r.stderr[-500:]
+    ra = pd.read_csv(os.path.join(a, "results.csv")).set_index("strategy")
+    rb = pd.read_csv(os.path.join(b, "results.csv")).set_index("strategy")
+    agents = [s for s in ra.index if s.startswith("agent:")]
+    assert agents and set(agents) == {s for s in rb.index if s.startswith("agent:")}
+    cols = ["PE", "A_k1", "A_k2", "A_k3", "A_k4", "rho_vs_oracle", "po_vs_oracle"]
+    pd.testing.assert_frame_equal(ra.loc[agents, cols], rb.loc[agents, cols])
+
+    # --replay without a path, or without --cohort, must refuse (no mock fallback).
+    r = run("scripts/variant/run_agent.py", "--replay")
+    assert r.returncode != 0 and "recorded agent orders" in r.stderr
+    r = run("scripts/variant/run_agent.py", "--replay", od)
+    assert r.returncode != 0 and "--cohort" in r.stderr
+
+    # A cohort variant with no recorded order is an error, never filled in.
+    f = sorted(os.listdir(od))[0]
+    df = pd.read_csv(os.path.join(od, f)).iloc[1:]
+    bad = tmp_path / "bad.csv"
+    df.to_csv(bad, index=False)
+    r = run("scripts/variant/run_benchmark.py", "--demo", "--replay-orders", str(bad),
+            "--outdir", str(tmp_path / "c"), "--figdir", str(tmp_path / "fc"))
+    assert r.returncode != 0 and "no recorded order" in r.stderr
 
 
 def test_cost_model_reports_deployable_ranks_and_oracle_reference(cohort):
@@ -803,3 +845,36 @@ def test_cost_weighted_yield_charges_functional_channel_more(cohort):
     assert all(costs[i + 1] >= costs[i] - 1e-9 for i in range(len(costs) - 1))
     for k in ks:
         assert cw[k]["cum_cost"] > 0 and cw[k]["resolved_per_cost"] >= 0.0
+
+
+def test_released_frozen_orders_reproduce_paper_numbers():
+    """The released frozen-pool orders (rebuilt offline from the run caches by
+    scripts/variant/rebuild_orders_from_cache.py) must re-score to the paper's
+    reported values: GPT-5.5 A(k)=0.807/0.917/0.837/0.807 in all three runs,
+    Gemini 2.5 Pro A(2)=0.810+-0.093 and rho_dec=0.373+-0.190."""
+    import glob, os
+    import numpy as np
+    import pandas as pd
+    from pwkbench.domains.base import load_real_cohort
+    from pwkbench.domains.variant import VARIANT_DOMAIN
+    from pwkbench.agents.recorded import RecordedOrderAgent
+    from pwkbench import harness
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    coh = load_real_cohort(pd.read_parquet(
+        os.path.join(here, "data/sample/cohort_full_real.parquet")), VARIANT_DOMAIN)
+
+    def score(pattern):
+        files = sorted(glob.glob(os.path.join(here, pattern)))
+        assert len(files) == 3, pattern
+        return [harness.evaluate_order(coh, RecordedOrderAgent(f).order(coh), "a")
+                for f in files]
+
+    for r in score("results/variant/variance/agent_orders/gpt55_run*.csv"):
+        assert np.allclose([r[f"A_k{k}"] for k in range(1, 5)],
+                           [0.807, 0.917, 0.837, 0.807], atol=5e-4)
+        assert abs(r["PE"] - 0.842) < 5e-4
+    g = score("results/variant/gemini_pro/variance_gemini_noctx/agent_orders/gemini25pro_run*.csv")
+    a2 = [r["A_k2"] for r in g]
+    rho = [r["rho_vs_oracle"] for r in g]
+    assert abs(np.mean(a2) - 0.810) < 5e-4 and abs(np.std(a2, ddof=1) - 0.093) < 5e-4
+    assert abs(np.mean(rho) - 0.373) < 5e-4 and abs(np.std(rho, ddof=1) - 0.190) < 5e-4

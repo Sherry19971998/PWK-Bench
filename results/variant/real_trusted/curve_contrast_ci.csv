@@ -1,0 +1,5 @@
+budget,diff,lo,hi,p_value,z_stat,includes_zero
+1,0.0,0.0,0.0,1.0,0.0,True
+2,0.0,0.0,0.0,1.0,0.0,True
+3,0.0,0.0,0.0,1.0,0.0,True
+4,0.0,0.0,0.0,1.0,0.0,True

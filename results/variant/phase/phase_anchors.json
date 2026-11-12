@@ -1,0 +1,1 @@
+{"variant (real, ACMG)": {"interaction": 0.05, "scorer": "additive", "gap_excess": -0.056, "z": -0.98}, "heart disease (real)": {"interaction": 0.15, "scorer": "logistic", "gap_excess": -0.001, "z": -0.15}}

@@ -76,6 +76,15 @@ arm.
 
 ## Reproducibility notes
 
+The `results/` paths below are the original run outputs, included in the
+release. `python scripts/live/make_consequence_mask_figure.py` recomputes
+every accuracy in the table from them with no API call.
+
+Terminology: "coords-only" or "strongest mask" means that the HGVS name
+(`clinvar_name`) is replaced by `chr:pos:ref>alt`. `gene` and `variant_id`
+are unchanged, and the live prompt still includes `Gene: <gene>`. Neither
+gene identity nor coordinate identity is masked.
+
 - gpt-5.5 unmasked closed-book: `results/live/trajectories_notools.csv` (pre-existing, 491/491)
 - gpt-5.5 p.-level masked closed-book: `results/live/masked/trajectories_masked_notools.csv` (491/491)
 - gpt-5.5 coordinates-only masked closed-book: `results/live/masked/trajectories_masked_coords_notools.csv` (491/491)

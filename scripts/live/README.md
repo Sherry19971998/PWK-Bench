@@ -32,12 +32,22 @@ paper-reported role is the closed-book masking check below.
 ## Reproducing the RQ3 closed-book masking check (the paper's only claude-sonnet-5 experiment)
 
 The masking check (§Evaluation Metrics / RQ3) withholds every tool AND masks
-the variant identity itself (consequence and/or genomic coordinates), then
-asks the model to classify from gene + masked identifier alone — a
-closed-book memorization probe, not a tool-use trajectory. The paper's
-reported claude-sonnet-5 number (masked accuracy on the strongest,
-coordinate-masked condition, n=485/491 valid) was produced via the Claude
-Code CLI:
+the HGVS name shown to the model, then asks it to classify closed-book — a
+memorization probe, not a tool-use trajectory. Two masking levels exist:
+
+- **p.-level** (`cohort_full_real_masked_p_level.parquet`): the parenthetical
+  protein consequence becomes `(p.?)`; the c.-level HGVS stays.
+- **Strongest** (`cohort_full_real_masked_coords.parquet`): the whole HGVS name
+  is replaced by genomic coordinates `chr:pos:ref>alt`.
+
+In both, **gene identity is retained** (the prompt still sends `Gene: <gene>`)
+and `variant_id` is unchanged; the strongest condition *shows* coordinates
+rather than hiding them. Describe it as "HGVS name replaced by genomic
+coordinates, gene retained", not as masking gene or coordinate identity.
+
+The paper's reported claude-sonnet-5 number (strongest condition,
+n=485/491 valid) was produced via the **Claude Code CLI**, not the Anthropic
+API:
 
 ```bash
 python3 scripts/live/run_claude_code_notools.py \
@@ -61,8 +71,8 @@ python scripts/live/run_live.py --vendor anthropic --no-tools \
 `gpt-5.5`'s side of this same comparison uses the identical masked cohort
 through the ordinary `openai` vendor arm with `--no-tools`. See
 [`docs/variant/e4_consequence_masking.md`](../../docs/variant/e4_consequence_masking.md)
-for the full masking methodology and the progressive (consequence-only vs.
-consequence+coordinate) ablation.
+for the full masking methodology and the progressive (p.-level only vs.
+full HGVS → coordinates) ablation.
 
 ## Reproducing the 3-run reliability data (12.4% flip rate, domain figures)
 
